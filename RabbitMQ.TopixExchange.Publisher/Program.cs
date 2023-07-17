@@ -1,7 +1,7 @@
 ﻿using RabbitMQ.Client;
 using System.Text;
 
-namespace RabbitMQ.FanoutExchange.Publisher
+namespace RabbitMQ.TopixExchange.Publisher
 {
     internal class Program
     {
@@ -13,19 +13,25 @@ namespace RabbitMQ.FanoutExchange.Publisher
             using IConnection connection = factory.CreateConnection();
             using IModel channel = connection.CreateModel();
 
-            channel.ExchangeDeclare(exchange: "fanout-exchange-example", type: ExchangeType.Fanout);
+            channel.ExchangeDeclare(
+                exchange:"topic-exchange-example",
+                type:ExchangeType.Topic
+                );
 
             for (int i = 0; i < 100; i++)
             {
                 await Task.Delay(200);
                 byte[] message = Encoding.UTF8.GetBytes($"Merhaba {i}");
+                Console.WriteLine("Topic Belirleyiniz :");
+                string topic = Console.ReadLine();
                 channel.BasicPublish(
-                    exchange: "fanout-exchange-example",
-                    routingKey: string.Empty,
-                    body: message);
+                    exchange: "topic-exchange-example",
+                    routingKey:topic,
+                    body:message
+                    );
             }
             Console.Read();
         }
-        //isim farketmeksizin bütün kuyruklara mesajı bind eder
+        //Kuyrukların routing keyine içinde yer alan isimlere veri göndermeyii sağlar
     }
 }

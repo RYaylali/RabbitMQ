@@ -28,5 +28,6 @@ namespace RabbitMQ.DirectExchange.Publisher
 
             Console.Read();
         }
+        //Direkt kuyruk ismi ile aynı olan kuyruğa mesaj gönderir o yüzden bind işlemine gerek yok çünkü kuyruk belli
     }
 }

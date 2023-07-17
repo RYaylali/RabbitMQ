@@ -2,7 +2,7 @@
 using RabbitMQ.Client.Events;
 using System.Text;
 
-namespace RabbitMQ.FanoutExchange.Consumer
+namespace RabbitMQ.TopixExchange.Consumer
 {
     internal class Program
     {
@@ -13,27 +13,23 @@ namespace RabbitMQ.FanoutExchange.Consumer
 
             using IConnection connection = factory.CreateConnection();
             using IModel channel = connection.CreateModel();
-
             channel.ExchangeDeclare(
-                exchange: "fanout-exchange-example", 
-                type: ExchangeType.Fanout);
-
-            Console.Write("Kuyruk adını giriniz : ");
-            string _queueName = Console.ReadLine();
-            channel.QueueDeclare(
-                queue:_queueName,
-                exclusive:false
+                exchange: "topic-exchange-example",
+                type: ExchangeType.Topic
                 );
+            Console.WriteLine("Dinlenecek  topic formatını belirleyiniz: ");
+            string topic = Console.ReadLine();
+            string queueName = channel.QueueDeclare().QueueName;
             channel.QueueBind(
-                queue:_queueName,
-                exchange: "fanout-exchange-example",
-                routingKey:string.Empty
+                queue: queueName,
+                exchange: "topic-exchange-example",
+                routingKey:topic
                 );
             EventingBasicConsumer consumer = new(channel);
             channel.BasicConsume(
-                queue:_queueName,
+                queue:queueName,
                 autoAck:true,
-                consumer:consumer
+                consumer
                 );
             consumer.Received += (sender, e) =>
             {
